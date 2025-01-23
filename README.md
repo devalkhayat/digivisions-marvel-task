@@ -13,7 +13,7 @@ This is assignment task source code for Digivisions Co.
 <br/>
 🖋️ Version Catalogs
 <br/>
-🖋️ Navigation with Compose
+🖋️ Type Safe Navigation
 <br/>
 🖋️ Retrofit
 
