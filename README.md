@@ -7,8 +7,6 @@ This is assignment task source code for Digivisions Co.
 <br/>
 🖋️ Multi-module architecture by Feature + MVVM
 <br/>
-🖋️ RoomDb
-<br/>
 🖋️ Jetpack Compose
 <br/>
 🖋️ Dagger-Hilt 
@@ -20,6 +18,7 @@ This is assignment task source code for Digivisions Co.
 🖋️ Retrofit
 
 # demo
+https://github.com/user-attachments/assets/e5beb8cb-7983-4a6d-be8f-1a7b37433a37
 
 
 
