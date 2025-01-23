@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Marvel Characters</string>
+    <string name="label_name">Name</string>
+    <string name="label_description">Description</string>
+    <string name="label_comics">Comics</string>
+    <string name="label_stories">Stories</string>
+    <string name="label_series">Series</string>
+    <string name="label_events">Events</string>
+    <string name="label_related_link">Related Links</string>
+    <string name="label_details">Detail</string>
+    <string name="label_wiki">Wiki</string>
+    <string name="label_comiclink">Comiclink</string>
+</resources>
