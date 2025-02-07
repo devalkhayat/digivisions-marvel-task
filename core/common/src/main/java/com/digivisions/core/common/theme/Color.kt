@@ -16,7 +16,8 @@ val AppBlue = Color(0xFF2196F3)
 val AppPink = Color(0xFF9C27B0)
 val AppRed = Color(0xFFE3005E)
 val AppGreen = Color(0xFF282C30)
-val AppGray=Color(0xFF282C30)
+val AppGray=Color(0xFF3C3F43)
+val AppLightGray=Color(0xFF3C3F43)
 
 //
 fun  getColor(type:AppColors):Color{
@@ -26,13 +27,14 @@ fun  getColor(type:AppColors):Color{
         AppColors.Text1 -> AppBlack
         AppColors.Text2 -> AppRed
         AppColors.Text3 -> AppWhite
-        AppColors.CircleProgress-> AppBlue
+        AppColors.CircleProgress-> AppRed
         AppColors.ContainerBackground1 -> AppWhite
-        AppColors.ContainerBackground1 -> AppWhite
+        AppColors.ContainerBackground2 -> AppLightGray
         AppColors.AppBarBackground -> AppBlack
         AppColors.Tint -> AppRed
         AppColors.Tint2 -> AppWhite
         AppColors.PopupBackground -> AppGray
+        AppColors.TextFieldBackground -> AppWhite
     }
 }
 sealed class AppColors{
@@ -42,8 +44,10 @@ sealed class AppColors{
     data object Text3: AppColors()
     data object CircleProgress:AppColors()
     data object ContainerBackground1:AppColors()
+    data object ContainerBackground2:AppColors()
     data object AppBarBackground:AppColors()
     data object Tint:AppColors()
     data object Tint2:AppColors()
     data object PopupBackground:AppColors()
+    data object TextFieldBackground:AppColors()
 }

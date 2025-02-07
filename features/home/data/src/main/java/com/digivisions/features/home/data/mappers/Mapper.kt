@@ -24,10 +24,10 @@ import com.digivisions.features.home.domain.model.details.SeriesResultModel
 import com.digivisions.features.home.domain.model.details.StoryDetailsModel
 import com.digivisions.features.home.domain.model.details.StoryResultModel
 
-fun CharactersResponse.toDomainInstance(): CharactersResultModel {
+fun CharactersResponse.toDomainInstance(): ArrayList<CharacterModel> {
 
     val dt=this.data
-    val dataInfoModel=DataInfoModel(offset = dt.offset, limit = dt.limit, total = dt.total, count = dt.count)
+
     val charactersList =ArrayList<CharacterModel>()
 
     dt.results.forEach { x ->
@@ -54,7 +54,9 @@ fun CharactersResponse.toDomainInstance(): CharactersResultModel {
 
         charactersList.add(
             CharacterModel(
-                avatar = "${x.thumbnail.path}/landscape_large.${x.thumbnail.extension}",
+                id = x.id,
+                avatar = "${x.thumbnail.path}/landscape_amazing.${x.thumbnail.extension}",
+                full_image = "${x.thumbnail.path}/landscape_incredible.${x.thumbnail.extension}",
                 name = x.name,
                 description = x.description,
                 comicList = comics,
@@ -65,9 +67,9 @@ fun CharactersResponse.toDomainInstance(): CharactersResultModel {
         )
     }
 
-    var rs= CharactersResultModel(dataInfo =dataInfoModel, characters = charactersList )
 
-    return  rs
+
+    return  charactersList
 }
 
 
@@ -88,7 +90,7 @@ fun ComicDetailsResponse.toDomainInstance(): ComicResultModel {
     val dt=this.data
     val dataInfoModel=DataInfoModel(offset = dt.offset, limit = dt.limit, total = dt.total, count = dt.count)
     val currentComic=dt.results[0]
-    val comicDetails= ComicDetailsModel(avatar = "${currentComic.thumbnail.path}/portrait_large.${currentComic.thumbnail.extension}")
+    val comicDetails= ComicDetailsModel(avatar = "${currentComic.thumbnail.path}/portrait_xlarge.${currentComic.thumbnail.extension}", full_image = "${currentComic.thumbnail.path}/portrait_uncanny.${currentComic.thumbnail.extension}")
     return  ComicResultModel(dataInfoModel,comicDetails)
 }
 
@@ -96,7 +98,7 @@ fun EventDetailsResponse.toDomainInstance(): EventResultModel {
     val dt=this.data
     val dataInfoModel=DataInfoModel(offset = dt.offset, limit = dt.limit, total = dt.total, count = dt.count)
     val currentEvent=dt.results[0]
-    val eventDetails= EventDetailsModel(avatar = "${currentEvent.thumbnail.path}/portrait_large.${currentEvent.thumbnail.extension}")
+    val eventDetails= EventDetailsModel(avatar = "${currentEvent.thumbnail.path}/portrait_xlarge.${currentEvent.thumbnail.extension}")
     return  EventResultModel(dataInfoModel,eventDetails)
 }
 
@@ -105,7 +107,7 @@ fun StoryDetailsResponse.toDomainInstance(): StoryResultModel {
     val dt=this.data
     val dataInfoModel=DataInfoModel(offset = dt.offset, limit = dt.limit, total = dt.total, count = dt.count)
     val currentStory=dt.results[0]
-    val storyDetails= StoryDetailsModel(avatar = "${currentStory.thumbnail.path}/portrait_large.${currentStory.thumbnail.extension}")
+    val storyDetails= StoryDetailsModel(avatar = "${currentStory.thumbnail.path}/portrait_xlarge.${currentStory.thumbnail.extension}")
     return  StoryResultModel(dataInfoModel,storyDetails)
 }
 
@@ -113,7 +115,7 @@ fun SeriesDetailsResponse.toDomainInstance(): SeriesResultModel {
     val dt=this.data
     val dataInfoModel=DataInfoModel(offset = dt.offset, limit = dt.limit, total = dt.total, count = dt.count)
     val currentSeries=dt.results[0]
-    val seriesDetails= SeriesDetailsModel(avatar = "${currentSeries.thumbnail.path}/portrait_large.${currentSeries.thumbnail.extension}")
+    val seriesDetails= SeriesDetailsModel(avatar = "${currentSeries.thumbnail.path}/portrait_xlarge.${currentSeries.thumbnail.extension}")
     return  SeriesResultModel(dataInfoModel,seriesDetails)
 }
 

@@ -18,11 +18,11 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
-class GetCharactersUseCase @Inject constructor(private val charactersRepository: CharactersRepository) {
+class FindCharactersUseCase @Inject constructor(private val charactersRepository: CharactersRepository) {
 
-    operator fun invoke() = flow<UiEvent<Flow<PagingData<CharacterModel>>>> {
+    operator fun invoke(startWith:String) = flow<UiEvent<Flow<PagingData<CharacterModel>>>> {
         emit(UiEvent.Loading())
-        val items: Flow<PagingData<CharacterModel>> = Pager(config = PagingConfig(pageSize = BASE_OFFSET), pagingSourceFactory = { CharactersPagingSource(charactersRepository) }).flow
+        val items: Flow<PagingData<CharacterModel>> = Pager(config = PagingConfig(pageSize = BASE_OFFSET), pagingSourceFactory = { CharactersPagingSource(charactersRepository,startWith) }).flow
         emit(UiEvent.Success(items))
     }.catch() {
         emit(UiEvent.Error(it.message.toString()))

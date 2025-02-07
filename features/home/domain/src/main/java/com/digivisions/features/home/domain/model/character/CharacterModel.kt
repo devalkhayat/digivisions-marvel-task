@@ -5,7 +5,9 @@ import java.util.ArrayList
 
 @Serializable
 data class CharacterModel(
+        val id:Int,
         val avatar: String,
+        val full_image:String,
         val name: String,
         val description:String,
         var comicList: ArrayList<ComicModel>,

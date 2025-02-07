@@ -47,6 +47,13 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
 
+    //
+    val paging_version = "3.3.5"
+
+    implementation("androidx.paging:paging-runtime:$paging_version")
+    // optional - Jetpack Compose integration
+    implementation("androidx.paging:paging-compose:3.3.5")
+
      //Internal
     implementation(project(":core:common"))
     testImplementation(libs.junit)

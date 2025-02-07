@@ -1,8 +1,8 @@
 package com.digivisions.core.common.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -18,7 +18,7 @@ import com.digivisions.core.common.theme.getColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppTopBar() {
+fun AppTopBar(action: (() -> Unit?)? =null) {
 
     CenterAlignedTopAppBar(
         title = { Image(painterResource(R.drawable.logo), contentDescription = null, modifier = Modifier.size(80.dp)) },
@@ -27,7 +27,11 @@ fun AppTopBar() {
             IconButton(onClick = {
 
             }) {
-                Icon(painter = painterResource(com.digivisions.core.common.R.drawable.ic_search), tint = getColor(AppColors.Tint), modifier = Modifier.size(32.dp), contentDescription = null)
+                Icon(painter = painterResource(com.digivisions.core.common.R.drawable.ic_search), tint = getColor(AppColors.Tint), modifier = Modifier.size(32.dp).clickable {
+                    if (action != null) {
+                        action()
+                    }
+                }, contentDescription = null)
             }
         }
     )

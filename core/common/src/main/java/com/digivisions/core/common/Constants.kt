@@ -6,4 +6,6 @@ object Constants {
  const val HASH_KEY:String="b6f5291810d51ab773167ea6879537b7"
  const val TIMESTAMP_KEY:String="1"
  const val BASE_IMAGE_URL="https://openweathermap.org/img/w/"
+ const val BASE_OFFSET=20
+ const val BASE_LIMIT=20
 }

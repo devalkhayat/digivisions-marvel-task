@@ -1,10 +1,12 @@
 package com.digivisions.features.home.domain.di
 
+import com.digivisions.features.home.domain.CharactersPagingSource
 import com.digivisions.features.home.domain.repo.CharactersRepository
 import com.digivisions.features.home.domain.repo.ComicsRepository
 import com.digivisions.features.home.domain.repo.EventsRepository
 import com.digivisions.features.home.domain.repo.SeriesRepository
 import com.digivisions.features.home.domain.repo.StoriesRepository
+import com.digivisions.features.home.domain.use_cases.FindCharactersUseCase
 import com.digivisions.features.home.domain.use_cases.GetCharactersUseCase
 import com.digivisions.features.home.domain.use_cases.GetComicDetailsUseCase
 import com.digivisions.features.home.domain.use_cases.GetEventDetailsUseCase
@@ -19,8 +21,14 @@ import dagger.hilt.components.SingletonComponent
 @Module
 object DomainLayerModule {
 
+
+
     @Provides
     fun provideGetCharactersInfoUseCase(charactersRepository: CharactersRepository):GetCharactersUseCase= GetCharactersUseCase(charactersRepository)
+
+
+    @Provides
+    fun provideFindCharactersInfoUseCase(charactersRepository: CharactersRepository): FindCharactersUseCase = FindCharactersUseCase(charactersRepository)
 
     @Provides
     fun provideGetComicDetailsUseCase(comicsRepository: ComicsRepository):GetComicDetailsUseCase=GetComicDetailsUseCase(comicsRepository)

@@ -1,5 +1,6 @@
 package com.digivisions.features.home.ui.screens.details
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.digivisions.features.home.domain.use_cases.GetComicDetailsUseCase
@@ -12,12 +13,25 @@ import androidx.navigation.NavHostController
 import com.digivisions.core.common.UiEvent
 import com.digivisions.features.home.domain.model.character.CharacterModel
 import com.digivisions.features.home.domain.model.character.ComicModel
+import com.digivisions.features.home.domain.model.details.ComicResultModel
 import com.digivisions.features.home.domain.use_cases.GetEventDetailsUseCase
 import com.digivisions.features.home.domain.use_cases.GetSeriesDetailsUseCase
 import com.digivisions.features.home.domain.use_cases.GetStoryDetailsUseCase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+
 
 @HiltViewModel
 class DetailsScreenViewModel @Inject constructor(
@@ -27,77 +41,80 @@ class DetailsScreenViewModel @Inject constructor(
     private val getSeriesDetailsUseCase: GetSeriesDetailsUseCase
 ) : ViewModel() {
 
-    private val _resultInfo = mutableStateOf(DetailsScreenStateHolder<Any>())
-    val resultInfo: State<DetailsScreenStateHolder<Any>> get() = _resultInfo
+    val currentItem = mutableStateOf<CharacterModel?>(null)
+    val currentNavController = mutableStateOf<NavHostController?>(null)
+    val comicsActionState = mutableStateOf<ComicsStateHolder>(ComicsStateHolder.Loading)
+    val eventsActionState = mutableStateOf<EventStateHolder>(EventStateHolder.Loading)
+    val storiesActionState = mutableStateOf<StoriesStateHolder>(StoriesStateHolder.Loading)
+    val seriesActionState = mutableStateOf<SeriesStateHolder>(SeriesStateHolder.Loading)
 
-    var _currentItem = mutableStateOf<CharacterModel?>(null)
-    var _currentNavController= mutableStateOf<NavHostController?>(null)
-
-    fun getComicDetails(id: Int) {
+    fun assign(model: CharacterModel) {
         viewModelScope.launch {
-            getComicDetailsUseCase(id).onEach {
-                when(it) {
-                    is UiEvent.Loading -> _resultInfo.value =
-                        DetailsScreenStateHolder(isLoading = true)
+            currentItem.value = model
 
-                    is UiEvent.Success -> _resultInfo.value =
-                        DetailsScreenStateHolder(data = it.data)
+            launch { loadComics() }
+            launch { loadSeries() }
+            launch { loadStories() }
+            launch { loadEvents() }
 
-                    is UiEvent.Error -> _resultInfo.value =
-                        DetailsScreenStateHolder(error = it.message.toString())
-                }
-            }.launchIn(viewModelScope)
+
+        }
+
+    }
+
+    private suspend fun loadComics() {
+        viewModelScope.launch {
+
+            currentItem.value!!.comicList.forEach { i ->
+
+                getComicDetailsUseCase(i.id).filter { item -> (item as UiEvent).data != null }
+                    .collect {
+                        i.url = it.data?.comicDetailsModel?.avatar
+                        i.url_large = it.data?.comicDetailsModel?.full_image
+                    }
+            }
+            comicsActionState.value = ComicsStateHolder.Finish(currentItem.value!!.comicList)
         }
     }
 
-    fun getEventDetails(id: Int) {
+    private suspend fun loadEvents() {
         viewModelScope.launch {
-            getEventDetailsUseCase(id).onEach {
-                when(it) {
-                    is UiEvent.Loading -> _resultInfo.value =
-                        DetailsScreenStateHolder(isLoading = true)
 
-                    is UiEvent.Success -> _resultInfo.value =
-                        DetailsScreenStateHolder(data = it.data)
+            currentItem.value!!.eventList.forEach { i ->
 
-                    is UiEvent.Error -> _resultInfo.value =
-                        DetailsScreenStateHolder(error = it.message.toString())
-                }
-            }.launchIn(viewModelScope)
+                getEventDetailsUseCase(i.id).filter { item -> (item as UiEvent).data != null }
+                    .collect {
+                        i.url = it.data?.eventDetailsModel?.avatar
+                    }
+            }
+            eventsActionState.value = EventStateHolder.Finish(currentItem.value!!.eventList)
         }
     }
 
-    fun getStoryDetails(id: Int) {
+    private suspend fun loadStories() {
         viewModelScope.launch {
-            getStoryDetailsUseCase(id).onEach {
-                when(it) {
-                    is UiEvent.Loading -> _resultInfo.value =
-                        DetailsScreenStateHolder(isLoading = true)
+            currentItem.value!!.storyList.forEach { i ->
+                getStoryDetailsUseCase(i.id).filter { item -> (item as UiEvent).data != null }
+                    .collect {
+                        i.url = it.data?.storyDetailsModel?.avatar
 
-                    is UiEvent.Success -> _resultInfo.value =
-                        DetailsScreenStateHolder(data = it.data)
-
-                    is UiEvent.Error -> _resultInfo.value =
-                        DetailsScreenStateHolder(error = it.message.toString())
-                }
-            }.launchIn(viewModelScope)
+                    }
+            }
+            storiesActionState.value = StoriesStateHolder.Finish(currentItem.value!!.storyList)
         }
     }
 
-    fun getSeriesDetails(id: Int) {
+    private suspend fun loadSeries() {
         viewModelScope.launch {
-            getSeriesDetailsUseCase(id).onEach {
-                when(it) {
-                    is UiEvent.Loading -> _resultInfo.value =
-                        DetailsScreenStateHolder(isLoading = true)
 
-                    is UiEvent.Success -> _resultInfo.value =
-                        DetailsScreenStateHolder(data = it.data)
+            currentItem.value!!.seriesList.forEach { i ->
 
-                    is UiEvent.Error -> _resultInfo.value =
-                        DetailsScreenStateHolder(error = it.message.toString())
-                }
-            }.launchIn(viewModelScope)
+                getSeriesDetailsUseCase(i.id).filter { item -> (item as UiEvent).data != null }
+                    .collect {
+                        i.url = it.data?.seriesDetailsModel?.avatar
+                    }
+            }
+            seriesActionState.value = SeriesStateHolder.Finish(currentItem.value!!.seriesList)
         }
     }
 

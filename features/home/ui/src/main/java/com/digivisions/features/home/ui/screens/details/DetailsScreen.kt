@@ -1,7 +1,10 @@
 package com.digivisions.features.home.ui.screens.details
 
+import android.annotation.SuppressLint
+import android.graphics.Paint.Align
 import android.util.Log
 import android.widget.ImageButton
+import android.widget.Space
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,15 +21,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
@@ -38,85 +41,124 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.digivisions.core.common.ModelType
 import com.digivisions.core.common.components.AppLabel
+import com.digivisions.core.common.components.CircleLoading
 import com.digivisions.core.common.components.LoadNetworkImage
 import com.digivisions.core.common.theme.AppColors
 import com.digivisions.core.common.theme.getColor
 import com.digivisions.core.navigation.HomeFeatureRoutes
 import com.digivisions.features.home.domain.model.character.CharacterModel
-import com.digivisions.features.home.ui.R
-import com.digivisions.features.home.ui.screens.home.HomeScreenViewModel
+import com.digivisions.features.home.domain.model.character.ComicModel
+import com.digivisions.features.home.domain.model.character.EventsModel
+import com.digivisions.features.home.domain.model.character.SeriesModel
+import com.digivisions.features.home.domain.model.character.StoriesModel
+
 
 @Composable
 fun DetailsScreen(navHostController: NavHostController, currentItem: CharacterModel,detailsScreenViewModel: DetailsScreenViewModel = hiltViewModel()){
 
-    LaunchedEffect(true) {
-        detailsScreenViewModel._currentItem.value=currentItem
-        detailsScreenViewModel._currentNavController.value=navHostController
-
+    LaunchedEffect(currentItem) {
+        detailsScreenViewModel.assign(currentItem)
+        detailsScreenViewModel.currentNavController.value=navHostController
     }
 
-   val x= detailsScreenViewModel._currentItem.value
-
-
+    val x by detailsScreenViewModel.currentItem
+    val comics by detailsScreenViewModel.comicsActionState
+    val events by detailsScreenViewModel.eventsActionState
+    val stories by detailsScreenViewModel.storiesActionState
+    val series by detailsScreenViewModel.seriesActionState
 
     Column(modifier = Modifier
         .fillMaxSize()
-        .paint(painterResource(id = com.digivisions.core.common.R.drawable.background), contentScale = ContentScale.FillBounds)
+        .paint(
+            painterResource(id = com.digivisions.core.common.R.drawable.background),
+            contentScale = ContentScale.FillBounds
+        )
         .verticalScroll(rememberScrollState())) {
-        x?.let {
-            Header(it.avatar){
-                navHostController.popBackStack()
-            }
-            Spacer(modifier = Modifier.height(16.dp))
 
-            Column(modifier = Modifier.fillMaxWidth().padding(start = 8.dp,end=8.dp)) {
-                InfoSection(name = it.name, description = it.description)
-                Spacer(modifier = Modifier.height(32.dp))
 
-                detailsScreenViewModel._currentItem.value?.let {
-                    if (it.comicList.size > 0)
-                        ListSection(
-                            modelType = ModelType.Comic,
-                            stringResource(com.digivisions.core.common.R.string.label_comics),
-                            detailsScreenViewModel
-                        )
-                    if (it.seriesList.size > 0) {
-                        Spacer(modifier = Modifier.height(32.dp))
-                        ListSection(
-                            modelType = ModelType.Series,
-                            stringResource(com.digivisions.core.common.R.string.label_series),
-                            detailsScreenViewModel
-                        )
-                    }
-                    if (it.storyList.size > 0) {
-                        Spacer(modifier = Modifier.height(32.dp))
-                        ListSection(
-                            modelType = ModelType.Story,
-                            stringResource(com.digivisions.core.common.R.string.label_stories),
-                            detailsScreenViewModel
-                        )
-                    }
-                    if (it.eventList.size > 0) {
-                        Spacer(modifier = Modifier.height(32.dp))
-                        ListSection(
-                            modelType = ModelType.Event,
-                            stringResource(com.digivisions.core.common.R.string.label_events),
-                            detailsScreenViewModel
-                        )
-                    }
+            x?.let { i->
+                Log.d("neo8585", "DetailsScreen: ${i.full_image}")
+                Header(i.full_image){
+                    navHostController.popBackStack()
                 }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Column(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, end = 8.dp)) {
+
+                    InfoSection(name = i.name, description = i.description)
+
+                    if(i.comicList.size >0) {
+                        Spacer(modifier = Modifier.height(32.dp))
+
+                        when(comics){
+                           is ComicsStateHolder.Finish ->
+                                ListSection(
+                                    stringResource(com.digivisions.core.common.R.string.label_comics),
+                                    (comics as ComicsStateHolder.Finish).data,
+                                    detailsScreenViewModel
+                                )
+
+                            ComicsStateHolder.Loading -> ShowLoading()
+                        }
+
+                    }
+                    if (i.seriesList.size > 0) {
+                          Spacer(modifier = Modifier.height(32.dp))
+                        when(series){
+                            is SeriesStateHolder.Finish ->
+                                ListSection(
+                                    stringResource(com.digivisions.core.common.R.string.label_series),
+                                    (series as SeriesStateHolder.Finish).data,
+                                    detailsScreenViewModel
+                                )
+
+                            SeriesStateHolder.Loading -> ShowLoading()
+                        }
+
+                      }
+                    if (i.storyList.size > 0) {
+                          Spacer(modifier = Modifier.height(32.dp))
+
+                        when(stories){
+                            is StoriesStateHolder.Finish ->
+                                ListSection(
+                                    stringResource(com.digivisions.core.common.R.string.label_stories),
+                                    (stories as StoriesStateHolder.Finish).data,
+                                    detailsScreenViewModel
+                                )
+
+                            StoriesStateHolder.Loading -> ShowLoading()
+                        }
+                      }
+                    if (i.eventList.size > 0) {
+                          Spacer(modifier = Modifier.height(32.dp))
+                        when(events){
+                            is EventStateHolder.Finish ->
+                                ListSection(
+                                    stringResource(com.digivisions.core.common.R.string.label_events),
+                                    (events as EventStateHolder.Finish).data,
+                                    detailsScreenViewModel
+                                )
+
+                            EventStateHolder.Loading -> ShowLoading()
+                        }
+
+                      }
+
+                    Spacer(modifier = Modifier.height(32.dp))
+                    RelatedLinksSection()
+                    Spacer(modifier = Modifier.height(32.dp))
 
 
 
-                Spacer(modifier = Modifier.height(32.dp))
-                RelatedLinksSection()
-                Spacer(modifier = Modifier.height(32.dp))
+
+
             }
-
-
         }
+
 
 
     }
@@ -124,17 +166,123 @@ fun DetailsScreen(navHostController: NavHostController, currentItem: CharacterMo
 
 }
 
+
+@Composable
+fun <T> ListSection(caption: String,data:ArrayList<T>,detailsScreenViewModel: DetailsScreenViewModel) {
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        AppLabel(
+            caption = caption.uppercase(),
+            style = MaterialTheme.typography.labelMedium,
+            color = AppColors.Text2
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(250.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+
+            for( i in data){
+                if(i is ComicModel){
+                    item {GenerateItem( i.url, i.name,detailsScreenViewModel) }
+                }
+                if(i is SeriesModel){
+                    item {GenerateItem( i.url, i.name,detailsScreenViewModel) }
+                }
+                if(i is StoriesModel){
+                    item {GenerateItem( i.url, i.name,detailsScreenViewModel) }
+                }
+                if(i is EventsModel){
+                    item {GenerateItem( i.url, i.name,detailsScreenViewModel) }
+                }
+            }
+
+
+
+
+
+        }
+    }
+}
+
+
+@Composable
+fun GenerateItem(url:String?, caption: String,detailsScreenViewModel: DetailsScreenViewModel) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxHeight()
+            .width(120.dp)
+    ) {
+
+        Box(modifier = Modifier
+            .size(width = 120.dp, height = 200.dp)
+            .clickable {
+                detailsScreenViewModel.currentNavController.value?.navigate(
+                    HomeFeatureRoutes.PreviewScreenRoute(
+                        detailsScreenViewModel.currentItem.value?.comicList!!
+                    )
+                )
+            }) {
+            AsyncImage(
+                model =  url,
+                contentDescription = null,
+                onLoading = {
+
+                },
+                onError = {
+                    Log.d("neo2020", "GenerateItem: ${it.result.throwable.message}")
+                },
+                error = painterResource(com.digivisions.core.common.R.drawable.background_image_error),
+
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+            )
+
+
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        AppLabel(
+            caption = caption,
+            style = MaterialTheme.typography.labelSmall,
+            color = AppColors.Text3,
+            modifier = Modifier.padding(4.dp),
+            textAlign = TextAlign.Center
+        )
+    }
+
+
+}
+
+@Composable
+fun ShowLoading(){
+    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        Column {
+            CircleLoading()
+            Spacer(modifier = Modifier.height(8.dp))
+            AppLabel(caption = "loading...", style = MaterialTheme.typography.labelSmall,color=AppColors.Text3)
+        }
+    }
+}
+
+/*******************************************************************************************/
+/*******************************************************************************************/
+
 @Composable
 fun Header(url:String,onPressBack:()->Unit){
-    Box(modifier = Modifier.fillMaxWidth().height(300.dp)){
-        LoadNetworkImage(url=url, modifier = Modifier.fillMaxSize(), scale = ContentScale.FillBounds)
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .height(300.dp)){
+        LoadNetworkImage(url=url, modifier = Modifier.fillMaxSize(), scale = ContentScale.Crop)
         IconButton(onClick = {onPressBack()}, modifier = Modifier.align(alignment = Alignment.TopStart)) {
             Icon(painterResource(com.digivisions.core.common.R.drawable.ic_arrow_left), contentDescription = null,modifier = Modifier.size(24.dp))
         }
     }
 
 }
-
 @Composable
 fun InfoSection(name:String,description:String){
     Box(modifier = Modifier.fillMaxWidth()){
@@ -176,7 +324,6 @@ fun RelatedLinksSection() {
         Spacer(modifier = Modifier.height(12.dp))
     }
 }
-
 @Composable
 fun Link(caption:String){
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -185,122 +332,3 @@ fun Link(caption:String){
         Icon(painterResource(com.digivisions.core.common.R.drawable.ic_arrow_right), tint = getColor(AppColors.Tint2), contentDescription = null, modifier = Modifier.size(24.dp))
     }
 }
-
-@Composable
-fun ListSection(modelType: ModelType,caption: String,detailsScreenViewModel:DetailsScreenViewModel) {
-
-    var url by remember { mutableStateOf("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_dSygMWbKQFzgP20rLq6crx3itm6mnQ5hcA&s") }
-
-    Column(modifier = Modifier.fillMaxWidth()) {
-        AppLabel(
-            caption = caption.uppercase(),
-            style = MaterialTheme.typography.labelMedium,
-            color = AppColors.Text2
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        LazyRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(250.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-
-            when(modelType){
-                ModelType.Comic -> {
-                    detailsScreenViewModel._currentItem.value?.comicList?.forEach {
-
-                        item { GenerateItem(detailsScreenViewModel,url = url, caption = it.name)  }
-
-                    }
-                }
-                ModelType.Story -> {
-                    detailsScreenViewModel._currentItem.value?.storyList?.forEach {
-
-                        item { GenerateItem(detailsScreenViewModel,url = url, caption = it.name)  }
-
-                    }
-                }
-                ModelType.Series -> {
-                    detailsScreenViewModel._currentItem.value?.seriesList?.forEach {
-
-                        item { GenerateItem(detailsScreenViewModel,url =url, caption = it.name)  }
-
-                    }
-                }
-                ModelType.Event -> {
-
-                    detailsScreenViewModel._currentItem.value?.eventList?.forEach {
-
-                        item { GenerateItem(detailsScreenViewModel,url = url, caption = it.name)  }
-
-                    }
-                }
-            }
-
-
-
-
-        }
-    }
-}
-@Composable
-fun GenerateItem(detailsScreenViewModel:DetailsScreenViewModel,url: String, caption: String) {
-
-    Column(
-        modifier = Modifier
-            .fillMaxHeight()
-            .width(120.dp)
-    ) {
-
-        Box(modifier = Modifier.size(width = 120.dp, height = 200.dp).clickable {
-            detailsScreenViewModel._currentNavController.value?.navigate(HomeFeatureRoutes.PreviewScreenRoute(url,caption))
-        }) {
-            AsyncImage(
-                model = url,
-                contentDescription = null,
-                onLoading = {
-
-                },
-                onError = {
-                    Log.d("neo2020", "GenerateItem: ${it.result.throwable.message}")
-                },
-                /*placeholder = painterResource(com.digivisions.core.common.R.drawable.ic_humidity),
-                error = painterResource(com.digivisions.core.common.R.drawable.ic_wind),*/
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-            )
-
-
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        AppLabel(
-            caption = caption,
-            style = MaterialTheme.typography.labelSmall,
-            color = AppColors.Text3,
-            modifier = Modifier.padding(4.dp),
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
-
-
-
-
-/*
- val getUrlRememberCoroutine= rememberCoroutineScope()
-if (i.url.isNullOrBlank()){
-    getUrlRememberCoroutine.launch {
-        detailsScreenViewModel.getComicDetails(i.id)
-        val rs=detailsScreenViewModel.resultInfo
-        if(!rs.value.isLoading && rs.value.error.isNotBlank()){
-            url= (detailsScreenViewModel.resultInfo.value.data as ComicModel).url.toString()
-            Log.d("neo88", "ListSection: $url")
-        }else{
-            Log.d("neo88", "ListSection:${rs.value.error.toString()}")
-        }
-    }
-}*/
-
-

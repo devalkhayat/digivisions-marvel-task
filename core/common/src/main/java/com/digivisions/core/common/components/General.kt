@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,7 +30,7 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 
 @Composable
-fun ScreenPlaceHolder(content: @Composable ()->Unit){
+fun ScreenPlaceHolder(modifier: Modifier=Modifier,content: @Composable ()->Unit){
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
         content()
     }
@@ -38,6 +39,7 @@ fun ScreenPlaceHolder(content: @Composable ()->Unit){
 
 @Composable
 fun LoadNetworkImage(url:String,modifier: Modifier=Modifier,scale:ContentScale=ContentScale.Crop){
+    
     AsyncImage(
         model = url,
         contentDescription = null,
@@ -52,4 +54,9 @@ fun LoadNetworkImage(url:String,modifier: Modifier=Modifier,scale:ContentScale=C
         modifier = modifier
             .fillMaxSize()
     )
+}
+
+@Composable
+fun CircleLoading(){
+    CircularProgressIndicator(color = getColor(AppColors.CircleProgress),strokeWidth = 5.dp)
 }

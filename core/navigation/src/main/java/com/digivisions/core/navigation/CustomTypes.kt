@@ -36,69 +36,22 @@ val CharacterModelType=object : NavType<CharacterModel>(isNullableAllowed = true
 
 
 
-val ComicModelType=object :NavType<ComicModel>(isNullableAllowed = true){
-    override fun get(bundle: Bundle, key: String): ComicModel? {
-        return Json.decodeFromString(bundle.getString(key)?: return null)
+val ComicModelType=object :NavType<List<ComicModel>>(isNullableAllowed = true){
+    override fun get(bundle: Bundle, key: String): List<ComicModel>? {
+        return bundle.getSerializable(key) as List<ComicModel>
     }
 
-    override fun parseValue(value: String): ComicModel {
-        var x= Json.decodeFromString<ComicModel>(Uri.decode(value))
-        Log.d("neo9090", "serializeAsValue: ${value}")
-        return  Json.decodeFromString(Uri.decode(value))
+    override fun parseValue(value: String): List<ComicModel> {
+           return Json.decodeFromString(value)
     }
 
-    override fun put(bundle: Bundle, key: String, value: ComicModel) {
-        bundle.putString(key,Json.encodeToString(value))
+    override fun put(bundle: Bundle, key: String, value: List<ComicModel>) {
+        bundle.putSerializable(key, value as java.io.Serializable)
     }
 
-    override fun serializeAsValue(value: ComicModel): String {
+    override fun serializeAsValue(value: List<ComicModel>): String {
 
         return Uri.encode(Json.encodeToString(value))
     }
-
 }
 
-val SeriesModelType=object :NavType<SeriesModel>(isNullableAllowed = true){
-    override fun get(bundle: Bundle, key: String): SeriesModel? {
-        return Json.decodeFromString(bundle.getString(key)?: return null)
-    }
-
-    override fun parseValue(value: String): SeriesModel {
-        var x= Json.decodeFromString<SeriesModel>(Uri.decode(value))
-        Log.d("neo9090", "serializeAsValue: ${value}")
-        return  Json.decodeFromString(Uri.decode(value))
-    }
-
-    override fun put(bundle: Bundle, key: String, value: SeriesModel) {
-        bundle.putString(key,Json.encodeToString(value))
-    }
-
-    override fun serializeAsValue(value: SeriesModel): String {
-
-        return Uri.encode(Json.encodeToString(value))
-    }
-
-
-}
-
-val EventsModelType=object :NavType<EventsModel>(isNullableAllowed = true){
-    override fun get(bundle: Bundle, key: String): EventsModel? {
-        return Json.decodeFromString(bundle.getString(key)?: return null)
-    }
-
-    override fun parseValue(value: String): EventsModel {
-        var x= Json.decodeFromString<EventsModel>(Uri.decode(value))
-        Log.d("neo9090", "serializeAsValue: ${value}")
-        return  Json.decodeFromString(Uri.decode(value))
-    }
-
-    override fun put(bundle: Bundle, key: String, value: EventsModel) {
-        bundle.putString(key,Json.encodeToString(value))
-    }
-
-    override fun serializeAsValue(value: EventsModel): String {
-
-        return Uri.encode(Json.encodeToString(value))
-    }
-
-}

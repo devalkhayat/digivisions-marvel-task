@@ -66,6 +66,13 @@ dependencies {
     //
     implementation(libs.androidx.work)
     implementation(libs.coil)
+    //
+
+    val paging_version = "3.3.5"
+
+    implementation("androidx.paging:paging-runtime:$paging_version")
+    // optional - Jetpack Compose integration
+    implementation("androidx.paging:paging-compose:3.3.5")
     //Internal Modules
     implementation(project(":features:home:domain"))
     implementation(project(":core:common"))

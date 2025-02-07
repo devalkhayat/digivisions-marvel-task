@@ -13,7 +13,7 @@ import retrofit2.http.Query
 interface ApiService {
 
     @GET("v1/public/characters")
-    suspend fun getCharacters(@Query("offset") offset:Int?=null): CharactersResponse
+    suspend fun getCharacters(@Query("offset") offset:Int?=null,@Query("limit") limit:Int?=null,@Query("nameStartsWith") nameStartsWith:String?=null): CharactersResponse
     @GET("v1/public/comics/{id}")
     suspend fun getComic(@Path("id") id :Int): ComicDetailsResponse
     @GET("v1/public/events/{id}")
