@@ -98,7 +98,7 @@ fun EventDetailsResponse.toDomainInstance(): EventResultModel {
     val dt=this.data
     val dataInfoModel=DataInfoModel(offset = dt.offset, limit = dt.limit, total = dt.total, count = dt.count)
     val currentEvent=dt.results[0]
-    val eventDetails= EventDetailsModel(avatar = "${currentEvent.thumbnail.path}/portrait_xlarge.${currentEvent.thumbnail.extension}")
+    val eventDetails= EventDetailsModel(avatar = "${currentEvent.thumbnail.path}/portrait_xlarge.${currentEvent.thumbnail.extension}",full_image = "${currentEvent.thumbnail.path}/portrait_uncanny.${currentEvent.thumbnail.extension}")
     return  EventResultModel(dataInfoModel,eventDetails)
 }
 
@@ -107,7 +107,7 @@ fun StoryDetailsResponse.toDomainInstance(): StoryResultModel {
     val dt=this.data
     val dataInfoModel=DataInfoModel(offset = dt.offset, limit = dt.limit, total = dt.total, count = dt.count)
     val currentStory=dt.results[0]
-    val storyDetails= StoryDetailsModel(avatar = "${currentStory.thumbnail.path}/portrait_xlarge.${currentStory.thumbnail.extension}")
+    val storyDetails= StoryDetailsModel(avatar = "${currentStory.thumbnail.path}/portrait_xlarge.${currentStory.thumbnail.extension}",full_image = "${currentStory.thumbnail.path}/portrait_uncanny.${currentStory.thumbnail.extension}")
     return  StoryResultModel(dataInfoModel,storyDetails)
 }
 
@@ -115,7 +115,7 @@ fun SeriesDetailsResponse.toDomainInstance(): SeriesResultModel {
     val dt=this.data
     val dataInfoModel=DataInfoModel(offset = dt.offset, limit = dt.limit, total = dt.total, count = dt.count)
     val currentSeries=dt.results[0]
-    val seriesDetails= SeriesDetailsModel(avatar = "${currentSeries.thumbnail.path}/portrait_xlarge.${currentSeries.thumbnail.extension}")
+    val seriesDetails= SeriesDetailsModel(avatar = "${currentSeries.thumbnail.path}/portrait_xlarge.${currentSeries.thumbnail.extension}",full_image = "${currentSeries.thumbnail.path}/portrait_uncanny.${currentSeries.thumbnail.extension}")
     return  SeriesResultModel(dataInfoModel,seriesDetails)
 }
 

@@ -21,10 +21,16 @@ import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.digivisions.core.navigation.CharacterModelType
 import com.digivisions.core.navigation.ComicModelType
+import com.digivisions.core.navigation.EventModelType
 import com.digivisions.core.navigation.HomeFeatureRoutes
 import com.digivisions.core.navigation.NavigationApi
+import com.digivisions.core.navigation.SeriesModelType
+import com.digivisions.core.navigation.StoryModelType
 import com.digivisions.features.home.domain.model.character.CharacterModel
 import com.digivisions.features.home.domain.model.character.ComicModel
+import com.digivisions.features.home.domain.model.character.EventsModel
+import com.digivisions.features.home.domain.model.character.SeriesModel
+import com.digivisions.features.home.domain.model.character.StoriesModel
 import com.digivisions.features.home.ui.screens.details.DetailsScreen
 import com.digivisions.features.home.ui.screens.details.DetailsScreenViewModel
 import com.digivisions.features.home.ui.screens.details.PreviewScreen
@@ -56,12 +62,26 @@ internal object InternalHomeFeatureApi: NavigationApi {
 
 
             dialog<HomeFeatureRoutes.PreviewScreenRoute>(typeMap = mapOf(
-                typeOf<List<ComicModel>>() to ComicModelType,
+                typeOf<List<ComicModel>?>() to ComicModelType,
+                typeOf<List<SeriesModel>?>() to SeriesModelType,
+                typeOf<List<EventsModel>?>() to EventModelType,
+                typeOf<List<StoriesModel>?>() to StoryModelType,
             )) { entry ->
 
                 val data = entry.toRoute<HomeFeatureRoutes.PreviewScreenRoute>()
+               data.comicList?.let {
+                   PreviewScreen(navHostController = navController, dataList = it)
+               }
+                data.seriesList?.let {
+                    PreviewScreen(navHostController = navController, dataList = it)
+                }
+                data.eventList?.let {
+                    PreviewScreen(navHostController = navController, dataList = it)
+                }
+                data.storiesList?.let {
+                    PreviewScreen(navHostController = navController, dataList = it)
+                }
 
-                PreviewScreen(navHostController = navController, comicsList = data.dataList)
             }
 
 

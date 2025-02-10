@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.digivisions.core.common.ModelType
 import com.digivisions.core.common.components.AppLabel
 import com.digivisions.core.common.components.CircleLoading
 import com.digivisions.core.common.components.LoadNetworkImage
@@ -186,16 +187,16 @@ fun <T> ListSection(caption: String,data:ArrayList<T>,detailsScreenViewModel: De
 
             for( i in data){
                 if(i is ComicModel){
-                    item {GenerateItem( i.url, i.name,detailsScreenViewModel) }
+                    item {GenerateItem(ModelType.Comic, i.url, i.name,detailsScreenViewModel) }
                 }
                 if(i is SeriesModel){
-                    item {GenerateItem( i.url, i.name,detailsScreenViewModel) }
+                    item {GenerateItem(ModelType.Series, i.url, i.name,detailsScreenViewModel) }
                 }
                 if(i is StoriesModel){
-                    item {GenerateItem( i.url, i.name,detailsScreenViewModel) }
+                    item {GenerateItem(ModelType.Story, i.url, i.name,detailsScreenViewModel) }
                 }
                 if(i is EventsModel){
-                    item {GenerateItem( i.url, i.name,detailsScreenViewModel) }
+                    item {GenerateItem( ModelType.Event,i.url, i.name,detailsScreenViewModel) }
                 }
             }
 
@@ -209,7 +210,7 @@ fun <T> ListSection(caption: String,data:ArrayList<T>,detailsScreenViewModel: De
 
 
 @Composable
-fun GenerateItem(url:String?, caption: String,detailsScreenViewModel: DetailsScreenViewModel) {
+fun GenerateItem(type: ModelType, url:String?, caption: String, detailsScreenViewModel: DetailsScreenViewModel) {
 
     Column(
         modifier = Modifier
@@ -220,11 +221,20 @@ fun GenerateItem(url:String?, caption: String,detailsScreenViewModel: DetailsScr
         Box(modifier = Modifier
             .size(width = 120.dp, height = 200.dp)
             .clickable {
-                detailsScreenViewModel.currentNavController.value?.navigate(
-                    HomeFeatureRoutes.PreviewScreenRoute(
-                        detailsScreenViewModel.currentItem.value?.comicList!!
-                    )
-                )
+
+                detailsScreenViewModel.currentNavController.value?.let {
+
+                    when(type){
+                        ModelType.Comic ->  it.navigate(HomeFeatureRoutes.PreviewScreenRoute(comicList=detailsScreenViewModel.currentItem.value?.comicList!!))
+                        ModelType.Story ->  it.navigate(HomeFeatureRoutes.PreviewScreenRoute(storiesList=detailsScreenViewModel.currentItem.value?.storyList!!))
+                        ModelType.Series -> it.navigate(HomeFeatureRoutes.PreviewScreenRoute(seriesList=detailsScreenViewModel.currentItem.value?.seriesList!!))
+                        ModelType.Event ->  it.navigate(HomeFeatureRoutes.PreviewScreenRoute(eventList=detailsScreenViewModel.currentItem.value?.eventList!!))
+                    }
+
+                }
+
+
+
             }) {
             AsyncImage(
                 model =  url,

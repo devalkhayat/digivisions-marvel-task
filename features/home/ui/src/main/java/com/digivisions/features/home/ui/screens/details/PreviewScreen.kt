@@ -38,9 +38,12 @@ import com.digivisions.core.common.components.LoadNetworkImage
 import com.digivisions.core.common.theme.AppColors
 import com.digivisions.core.common.theme.getColor
 import com.digivisions.features.home.domain.model.character.ComicModel
-
+import com.digivisions.features.home.domain.model.character.EventsModel
+import com.digivisions.features.home.domain.model.character.SeriesModel
+import com.digivisions.features.home.domain.model.character.StoriesModel
+//PreviewScreen(navHostController: NavHostController,  comicList:ArrayList<ComicModel>?=null,  seriesList:ArrayList<SeriesModel>?=null,  eventList:ArrayList<EventsModel>?=null,  storiesList:ArrayList<StoriesModel>?=null){
 @Composable
-fun PreviewScreen(navHostController: NavHostController,comicsList:ArrayList<ComicModel>){
+fun <T> PreviewScreen(navHostController: NavHostController,  dataList:ArrayList<T>){
 
 
     Column(modifier = Modifier
@@ -53,34 +56,46 @@ fun PreviewScreen(navHostController: NavHostController,comicsList:ArrayList<Comi
         }
         Spacer(modifier = Modifier.height(8.dp))
 
-
-
-        val pagerState = rememberPagerState { comicsList.size }
-        HorizontalPager(state = pagerState, modifier = Modifier.fillMaxWidth().weight(1f), pageSpacing = 8.dp) { page ->
-            with( comicsList.get(page)){
-                Log.i("neo8585", "PreviewScreen: ${this.name}")
-                GenerateItem(this.url_large!!,this.name)
-            }
-
-
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center){
-
-            CustomPagerIndicatorFirstTry(pagerState, indicatorColor = AppColors.CircleProgress)
-        }
-
+        Pager(modifier = Modifier.fillMaxWidth().weight(1f),dataList)
 
         Spacer(modifier = Modifier.height(25.dp))
 
     }
 
-
-
 }
 
+@Composable
+fun <T> Pager(modifier: Modifier=Modifier,data:ArrayList<T>){
+
+    val pagerState = rememberPagerState { data.size }
+    HorizontalPager(state = pagerState, modifier = modifier, pageSpacing = 8.dp) { page ->
+        with( data.get(page)){
+
+            if(this is ComicModel){
+                GenerateItem(this.url_large,this.name)
+            }
+            if(this is SeriesModel){
+                GenerateItem(this.url_large,this.name)
+            }
+            if(this is StoriesModel){
+                GenerateItem(this.url_large,this.name)
+            }
+            if(this is EventsModel){
+                GenerateItem(this.url_large,this.name)
+            }
+
+        }
+
+    }
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center){
+
+        CustomPagerIndicatorFirstTry(pagerState, indicatorColor = AppColors.CircleProgress)
+    }
+
+}
 sealed class DownloadingImage{
     data object Loading:DownloadingImage()
     data object Success:DownloadingImage()
@@ -88,7 +103,7 @@ sealed class DownloadingImage{
 }
 
 @Composable
-fun GenerateItem(url: String,name: String){
+fun GenerateItem(url: String?,name: String){
 var currentState by remember { mutableStateOf<DownloadingImage>(DownloadingImage.Loading) }
 
 
@@ -99,6 +114,7 @@ var currentState by remember { mutableStateOf<DownloadingImage>(DownloadingImage
             AsyncImage(
                 model = url,
                 contentDescription = null,
+                error = painterResource(com.digivisions.core.common.R.drawable.background_image_error),
                 onError = {
                     currentState=DownloadingImage.Error
                 },

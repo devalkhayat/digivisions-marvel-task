@@ -85,6 +85,7 @@ class DetailsScreenViewModel @Inject constructor(
                 getEventDetailsUseCase(i.id).filter { item -> (item as UiEvent).data != null }
                     .collect {
                         i.url = it.data?.eventDetailsModel?.avatar
+                        i.url_large = it.data?.eventDetailsModel?.full_image
                     }
             }
             eventsActionState.value = EventStateHolder.Finish(currentItem.value!!.eventList)
@@ -97,6 +98,7 @@ class DetailsScreenViewModel @Inject constructor(
                 getStoryDetailsUseCase(i.id).filter { item -> (item as UiEvent).data != null }
                     .collect {
                         i.url = it.data?.storyDetailsModel?.avatar
+                        i.url_large = it.data?.storyDetailsModel?.full_image
 
                     }
             }
@@ -112,6 +114,7 @@ class DetailsScreenViewModel @Inject constructor(
                 getSeriesDetailsUseCase(i.id).filter { item -> (item as UiEvent).data != null }
                     .collect {
                         i.url = it.data?.seriesDetailsModel?.avatar
+                        i.url_large = it.data?.seriesDetailsModel?.full_image
                     }
             }
             seriesActionState.value = SeriesStateHolder.Finish(currentItem.value!!.seriesList)
