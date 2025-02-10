@@ -16,6 +16,8 @@ This is assignment task source code for Digivisions Co.
 🖋️ Type Safe Navigation
 <br/>
 🖋️ Retrofit
+<br/>
+🖋️ Paging Library
 
 # demo
 https://github.com/user-attachments/assets/e5beb8cb-7983-4a6d-be8f-1a7b37433a37
