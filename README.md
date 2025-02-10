@@ -20,7 +20,9 @@ This is assignment task source code for Digivisions Co.
 🖋️ Paging Library
 
 # demo
-https://github.com/user-attachments/assets/e5beb8cb-7983-4a6d-be8f-1a7b37433a37
+https://github.com/user-attachments/assets/ed319d08-02f6-4f11-9118-e1125c36a30a
+
+
 
 
 
